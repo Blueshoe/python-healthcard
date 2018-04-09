@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import json
+
 
 def unpack_bcd(byte_array):
 	half_byte_array = []

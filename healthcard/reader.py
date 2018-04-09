@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
+import json
 import zlib
-import time
-
-from smartcard.CardConnectionObserver import ConsoleCardConnectionObserver
-from smartcard.CardRequest import CardRequest
-from smartcard.CardType import AnyCardType
-from smartcard.ExclusiveTransmitCardConnection import ExclusiveTransmitCardConnection
-from smartcard.ExclusiveConnectCardConnection import ExclusiveConnectCardConnection
 from smartcard.Exceptions import NoCardException, CardConnectionException
 from smartcard.System import readers
 
 from healthcard.exceptions import HealthCardException, HealthCardReadException
+from healthcard.insurance import Insurance
+from healthcard.patient import Patient
 from healthcard.utils import unpack_bcd, decode_bcd
 
 COMMANDS = {
@@ -37,24 +33,20 @@ SFID = {
     'EF.VD': 0x02, # in HCA
 }
 
-class Patient(object):
-
-    def __init__(self, patient_xml):
-        pass
-
-
-class Insurance(object):
-
-    def __init__(self, insurance_xml):
-        pass
-
 
 class HealthCard(object):
 
-    def __init__(self):
-        self.patient = None
-        self.insurance = None
-        self.version = None
+    def __init__(self, generation, patient, insurance):
+        self.patient = patient
+        self.insurance = insurance
+        self.version = generation
+
+    def to_json(self):
+        return json.dumps({
+            'patient': self.patient.to_json(),
+            'insurance': json.dumps(self.insurance.__dict__),
+            'version': self.version
+        })
 
 
 class HealthCardReader(object):
@@ -69,14 +61,10 @@ class HealthCardReader(object):
                     raise HealthCardException('No reader found.')
                 self.reader = r[index]
                 self.connection = self.reader.createConnection()
-            # self.connection.addObserver(ConsoleCardConnectionObserver())
-            # self.connection = ExclusiveTransmitCardConnection(
-            #     ExclusiveConnectCardConnection(self.connection))
 
             self.connection.connect()
         except (NoCardException, CardConnectionException) as e:
-            print(e)
-            print 'No card inserted for reader: {}'.format(self.reader)
+            print('No card inserted for reader: {}'.format(self.reader))
 
     def create_read_command(self, pos, length):
         bpos = [pos >> 8 & 0xFF, pos & 0xFF]
@@ -84,7 +72,6 @@ class HealthCardReader(object):
 
     def run_command(self, adpu):
         data, sw1, sw2 = self.connection.transmit(adpu)
-        print('{} {:02X} {:02X}'.format(data, sw1, sw2))
         if (sw1, sw2) != (0x90, 0x00):
             if (sw1, sw2) == (0x62, 0x83):
                 raise HealthCardException('File deactivated.')
@@ -145,18 +132,12 @@ class HealthCardReader(object):
 
     def get_health_card(self):
 
-        # self.run_command(COMMANDS['RESET_CARD_TERMINAL'])
-
-        # self.run_command(COMMANDS['GET_CARD'])
-
         # Select Masterfile (root)
-        # self.connection.lock()
-
         self.run_command(COMMANDS['SELECT_MF'])
 
         #atr = self.connection.getATR()
 
-        self.card_generation = self.get_card_generation()
+        card_generation = self.get_card_generation()
         # Select Health Care Application
         self.run_command(COMMANDS['SELECT_HCA'])
         # Select file containing patient data
@@ -174,7 +155,6 @@ class HealthCardReader(object):
         # print('select pd')
         self.run_command(COMMANDS['SELECT_FILE_PD'])
 
-        #print('pd length: {}'.format(pd_length))
         patient_data_compressed = self.read_file(0x02, pd_length)
 
 
@@ -212,13 +192,13 @@ class HealthCardReader(object):
         insurance_data_compressed = bytes(insurance_data_compressed)
         insurance_data_xml = zlib.decompress(insurance_data_compressed, 15 + 16)
 
-        self.patient = Patient(patient_data_xml)
-        self.insurance = Insurance(insurance_data_xml)
+        patient = Patient(patient_data_xml)
+        insurance = Insurance(insurance_data_xml)
 
-        print(patient_data_xml)
+        #print(patient_data_xml)
+        # print(patient)
 
-        # self.connection.unlock()
-        # print('unlock')
-        # self.connection.disconnect()
 
-        return HealthCard()
+        self.connection.disconnect()
+
+        return HealthCard(generation=card_generation, patient=patient, insurance=insurance)
