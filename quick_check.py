@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-from smartcard.CardRequest import CardRequest
-from smartcard.CardType import AnyCardType
 from time import sleep
 from healthcard.reader import HealthCardReader
-
 
 reader = HealthCardReader()
 print('Trying to fetch card data...')
