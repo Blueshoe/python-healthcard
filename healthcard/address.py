@@ -7,8 +7,8 @@ VSD 5.1.x and VSD 5.2.x
 There is a good source which explains the main difference between both formats:
 ftp://ftp.kbv.de/ita-update/Abrechnung/KBV_ITA_VGEX_Mapping_KVK.pdf (page 9)
 """
-import json
 from pip._vendor.six import python_2_unicode_compatible
+
 
 @python_2_unicode_compatible
 class Address(object):
@@ -61,4 +61,4 @@ class ResidenceAddress(Address):
 
     def __str__(self):
         return u'{}-{} {} - {} {}'.format(self.country_code, self.zip_code, self.city, self.street,
-                                            self.street_number, self.address_addition)
+                                          self.street_number, self.address_addition)

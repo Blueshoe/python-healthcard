@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-import json
 import zlib
+from datetime import datetime
+from json import JSONEncoder
+
 from smartcard.Exceptions import NoCardException, CardConnectionException
 from smartcard.System import readers
 
+from healthcard.address import ResidenceAddress
 from healthcard.exceptions import HealthCardException, HealthCardReadException
 from healthcard.insurance import Insurance
 from healthcard.patient import Patient
@@ -25,12 +28,12 @@ COMMANDS = {
 
 # SFID - Short file identifier. These are only valid in conjunction with the Parent-Directory (DF)
 SFID = {
-    'EF.ATR': 0x1D, # in MF
-    'EF.GDO': 0x02, # in MF
-    'EF.Version': 0x10, # in MF
-    'EF.StatusVD': 0x0C, # in MF
-    'EF.PD': 0x01, # in HCA
-    'EF.VD': 0x02, # in HCA
+    'EF.ATR': 0x1D,  # in MF
+    'EF.GDO': 0x02,  # in MF
+    'EF.Version': 0x10,  # in MF
+    'EF.StatusVD': 0x0C,  # in MF
+    'EF.PD': 0x01,  # in HCA
+    'EF.VD': 0x02,  # in HCA
 }
 
 
@@ -42,11 +45,7 @@ class HealthCard(object):
         self.version = generation
 
     def to_json(self):
-        return json.dumps({
-            'patient': self.patient.to_json(),
-            'insurance': json.dumps(self.insurance.__dict__),
-            'version': self.version
-        })
+        return HealthCardJSONEncoder().encode(self)
 
 
 class HealthCardReader(object):
@@ -63,7 +62,7 @@ class HealthCardReader(object):
                 self.connection = self.reader.createConnection()
 
             self.connection.connect()
-        except (NoCardException, CardConnectionException) as e:
+        except (NoCardException, CardConnectionException):
             print('No card inserted for reader: {}'.format(self.reader))
 
     def create_read_command(self, pos, length):
@@ -135,8 +134,6 @@ class HealthCardReader(object):
         # Select Masterfile (root)
         self.run_command(COMMANDS['SELECT_MF'])
 
-        #atr = self.connection.getATR()
-
         card_generation = self.get_card_generation()
         # Select Health Care Application
         self.run_command(COMMANDS['SELECT_HCA'])
@@ -156,7 +153,6 @@ class HealthCardReader(object):
         self.run_command(COMMANDS['SELECT_FILE_PD'])
 
         patient_data_compressed = self.read_file(0x02, pd_length)
-
 
         self.run_command(COMMANDS['SELECT_MF'])
         self.run_command(COMMANDS['SELECT_HCA'])
@@ -195,10 +191,20 @@ class HealthCardReader(object):
         patient = Patient(patient_data_xml)
         insurance = Insurance(insurance_data_xml)
 
-        #print(patient_data_xml)
-        # print(patient)
-
-
         self.connection.disconnect()
 
         return HealthCard(generation=card_generation, patient=patient, insurance=insurance)
+
+
+class HealthCardJSONEncoder(JSONEncoder):
+    def default(self, o):
+        if isinstance(o, (HealthCard, Insurance, Patient, ResidenceAddress)):
+            return o.__dict__
+        if type(o) is datetime:
+            return o.strftime('%d.%m.%Y')
+        if type(o) is bytes:
+            try:
+                return o.decode('iso-8859-15')
+            except AttributeError:
+                raise TypeError(repr(o) + " is not JSON serializable")
+        raise TypeError(repr(o) + " is not JSON serializable")

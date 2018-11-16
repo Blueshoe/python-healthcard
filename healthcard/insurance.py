@@ -5,6 +5,7 @@ This module allows to parse insurance data XML and store insurance data into a p
 # -*- coding: utf-8 -*-
 from lxml import etree
 
+
 class Insurance(object):
 
     def __init__(self, xml):

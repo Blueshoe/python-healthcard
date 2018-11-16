@@ -5,14 +5,15 @@ object.
 
 """
 # -*- coding: utf-8 -*-
-import json
 from datetime import datetime
 from lxml import etree
 from pip._vendor.six import python_2_unicode_compatible
 
 from healthcard.address import PostalAddress, ResidenceAddress
 import sys
+
 sys.getdefaultencoding()
+
 
 @python_2_unicode_compatible
 class Patient(object):
@@ -26,7 +27,6 @@ class Patient(object):
         nsmap = tree.nsmap
         nsmap['vsd'] = nsmap[None]
         del nsmap[None]
-
 
         text_list = tree.xpath('//vsd:Versicherten_ID//text()', namespaces=nsmap)
         self.insurant_id = text_list[0] if len(text_list) != 0 else ''
@@ -54,18 +54,8 @@ class Patient(object):
             self.residential_address = ResidenceAddress(residential_address_node[0], nsmap)
 
     def to_json(self):
-        return json.dumps({
-            'insurant_id': self.insurant_id,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'gender': self.gender,
-            'title': self.title,
-            'name_addition': self.name_addition,
-            'birthdate': self.birthdate.strftime('%d.%m.%Y'),
-            'prefix': self.prefix,
-            'residential_address': self.residential_address.__dict__,
-            'xml': self.xml.decode('iso-8859-15')
-        })
+        from healthcard.reader import HealthCardJSONEncoder
+        return HealthCardJSONEncoder().encode(self)
 
     def __str__(self):
         return u'{} {}'.format(self.first_name, self.last_name)
