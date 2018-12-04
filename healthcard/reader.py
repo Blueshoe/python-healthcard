@@ -58,14 +58,12 @@ class HealthCard(object):
             'title': self.patient.title,
             'birthday': self.patient.birthdate.strftime('%d.%m.%Y'),
             'nameAddition': self.patient.name_addition,
-            'address': {
-                'city': self.patient.address.city,
-                'zipCode': self.patient.address.zip_code,
-                'country': self.patient.address.country_code,
-                'street': self.patient.address.street,
-                'streetNumber': self.patient.address.street_number,
-                'addressAddition': self.patient.address.address_addition,
-            },
+            'city': self.patient.address.city,
+            'zipCode': self.patient.address.zip_code,
+            'country': self.patient.address.country_code,
+            'street': self.patient.address.street,
+            'streetNumber': self.patient.address.street_number,
+            'addressAddition': self.patient.address.address_addition,
         })
 
 
