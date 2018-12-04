@@ -201,13 +201,11 @@ class HealthCardReader(object):
         patient_data_compressed = bytearray(patient_data_compressed)
         patient_data_compressed = bytes(patient_data_compressed)
         patient_data_xml = zlib.decompress(patient_data_compressed, 15 + 16)
-        print(patient_data_xml)
 
         insurance_data_compressed.extend([0x00] * 16)
         insurance_data_compressed = bytearray(insurance_data_compressed)
         insurance_data_compressed = bytes(insurance_data_compressed)
         insurance_data_xml = zlib.decompress(insurance_data_compressed, 15 + 16)
-        print(insurance_data_xml)
 
         patient = Patient(patient_data_xml)
         insurance = Insurance(insurance_data_xml)
