@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import zlib
 from datetime import datetime
 from json import JSONEncoder
@@ -46,6 +47,26 @@ class HealthCard(object):
 
     def to_json(self):
         return HealthCardJSONEncoder().encode(self)
+
+    def to_flattened_json(self):
+        return json.dumps({
+            'firstName': self.patient.first_name,
+            'lastName': self.patient.last_name,
+            'gender': self.patient.gender.lower(),
+            'insuranceId': self.patient.insurant_id,
+            'prefix': self.patient.prefix,
+            'title': self.patient.title,
+            'birthday': self.patient.birthdate.strftime('%d.%m.%Y'),
+            'nameAddition': self.patient.name_addition,
+            'address': {
+                'city': self.patient.address.city,
+                'zipCode': self.patient.address.zip_code,
+                'country': self.patient.address.country_code,
+                'street': self.patient.address.street,
+                'streetNumber': self.patient.address.street_number,
+                'addressAddition': self.patient.address.address_addition,
+            },
+        })
 
 
 class HealthCardReader(object):
@@ -182,11 +203,13 @@ class HealthCardReader(object):
         patient_data_compressed = bytearray(patient_data_compressed)
         patient_data_compressed = bytes(patient_data_compressed)
         patient_data_xml = zlib.decompress(patient_data_compressed, 15 + 16)
+        print(patient_data_xml)
 
         insurance_data_compressed.extend([0x00] * 16)
         insurance_data_compressed = bytearray(insurance_data_compressed)
         insurance_data_compressed = bytes(insurance_data_compressed)
         insurance_data_xml = zlib.decompress(insurance_data_compressed, 15 + 16)
+        print(insurance_data_xml)
 
         patient = Patient(patient_data_xml)
         insurance = Insurance(insurance_data_xml)

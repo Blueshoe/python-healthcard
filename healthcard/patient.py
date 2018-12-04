@@ -53,6 +53,10 @@ class Patient(object):
         if residential_address_node:
             self.residential_address = ResidenceAddress(residential_address_node[0], nsmap)
 
+    @property
+    def address(self):
+        return self.postal_address if getattr(self, 'postal_address', None) else self.residential_address
+
     def to_json(self):
         from healthcard.reader import HealthCardJSONEncoder
         return HealthCardJSONEncoder().encode(self)
