@@ -1,5 +1,5 @@
 =================
-python healthcard
+python-healthcard
 =================
 
 This package aims to provide a simple way to read healthcards from the german health insurance system.
