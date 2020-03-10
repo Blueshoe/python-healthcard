@@ -49,7 +49,7 @@ class HealthCard(object):
         return HealthCardJSONEncoder().encode(self)
 
     def to_flattened_json(self):
-        return json.dumps({
+        result = {
             'firstName': self.patient.first_name,
             'lastName': self.patient.last_name,
             'gender': self.patient.gender.lower(),
@@ -58,13 +58,24 @@ class HealthCard(object):
             'title': self.patient.title,
             'birthday': self.patient.birthdate.strftime('%d.%m.%Y'),
             'nameAddition': self.patient.name_addition,
-            'city': self.patient.address.city,
-            'zipCode': self.patient.address.zip_code,
-            'country': self.patient.address.country_code,
-            'street': self.patient.address.street,
-            'streetNumber': self.patient.address.street_number,
-            'addressAddition': self.patient.address.address_addition,
-        })
+        }
+        if self.patient.residential_address:
+            result.update({
+                'city': self.patient.residential_address.city,
+                'zipCode': self.patient.residential_address.zip_code,
+                'country': self.patient.residential_address.country_code,
+                'street': self.patient.residential_address.street,
+                'streetNumber': self.patient.residential_address.street_number,
+                'addressAddition': self.patient.residential_address.address_addition
+            })
+        elif self.patient.postal_address:
+            result.update({
+                'city': self.patient.postal_address.city,
+                'zipCode': self.patient.postal_address.zip_code,
+                'country': self.patient.postal_address.country_code,
+                'mailbox': self.patient.postal_address.mailbox
+            })
+        return result
 
 
 class HealthCardReader(object):
