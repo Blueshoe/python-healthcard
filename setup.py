@@ -13,7 +13,7 @@ except ImportError: # for pip <= 9.0.3
 install_reqs = parse_requirements("requirements.txt", session=False)
 reqs = [str(ir.req) for ir in install_reqs]
 
-setup(name='python-healthcard',
+setup(name='pythonhealthcard',
       version=__version__,
       description='A module to read german health insurance cards with python',
       url='https://gitlab.blueshoe.de/Blueshoe/python-healthcard/',
