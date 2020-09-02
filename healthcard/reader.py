@@ -153,7 +153,7 @@ class HealthCardReader(object):
             generation = 'G1'
         elif ef_version_1 == '3.0.0' and ef_version_2 == '3.0.1' and ef_version_3 == '3.0.3':
             generation = 'G1 plus'
-        elif ef_version_1 == '4.0.0' and ef_version_2 == '4.0.0' and ef_version_3 == '4.0.2':
+        elif ef_version_1 == '4.0.0' and ef_version_2 == '4.0.0' and ef_version_3 == '4.0.0':
             generation = 'G2'
         else:
             generation = 'unknown'
