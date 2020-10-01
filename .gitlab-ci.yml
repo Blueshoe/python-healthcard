@@ -1,0 +1,29 @@
+stages:
+  - build
+  - publish
+
+
+build:
+  stage: build
+  only:
+    - master
+  tags:
+    - pypi
+  script:
+    - python3 setup.py bdist_wheel
+  artifacts:
+    when: on_success
+    paths:
+      - dist/*
+
+
+publish:
+  stage: publish
+  only:
+    - master
+  tags:
+    - pypi
+  script:
+    - VERSION=$(python3 setup.py -V)
+    - PKG=$(python3 setup.py --name)
+    - pypi-private -v publish $PKG $VERSION
