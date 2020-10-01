@@ -75,7 +75,7 @@ class HealthCard(object):
                 'country': self.patient.postal_address.country_code,
                 'mailbox': self.patient.postal_address.mailbox
             })
-        return result
+        return json.dumps(result)
 
 
 class HealthCardReader(object):
