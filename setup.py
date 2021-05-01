@@ -2,17 +2,6 @@
 from setuptools import setup
 from healthcard import __version__
 
-try:  # for pip >= 10
-    from pip._internal.req import parse_requirements
-    from pip._internal import main
-except ImportError:  # for pip <= 9.0.3
-    from pip.req import parse_requirements
-    from pip import main
-
-
-install_reqs = parse_requirements("requirements.txt", session=False)
-reqs = [str(ir.req) for ir in install_reqs]
-
 setup(
     name="python-healthcard",
     version=__version__,
@@ -22,6 +11,6 @@ setup(
     author_email="robert@blueshoe.de",
     license="MIT",
     packages=["healthcard"],
-    install_requires=reqs,
+    install_requires=["pyscard==1.9.6", "lxml==4.6.3"],
     zip_safe=False,
 )
