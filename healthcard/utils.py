@@ -10,7 +10,7 @@ def unpack_bcd(byte_array):
 
 
 def decode_bcd(half_byte_array):
-    num = ''
+    num = ""
     for byte in half_byte_array:
         byte &= 0b00001111
         assert byte < 10
@@ -29,6 +29,6 @@ def get_namespace(tree):
         key = keys[0]
         ns = tree.nsmap[key]
     else:
-        ns = 'http://ws.gematik.de/fa/vsdm/vsd/v5.2'
+        ns = "http://ws.gematik.de/fa/vsdm/vsd/v5.2"
 
     return ns

@@ -14,32 +14,44 @@ from healthcard.patient import Patient
 from healthcard.utils import unpack_bcd, decode_bcd
 
 COMMANDS = {
-    'SELECT_MF': [0x00, 0xA4, 0x04, 0x0C, 0x07, 0xD2, 0x76, 0x00, 0x01, 0x44, 0x80, 0x00],
-    'SELECT_HCA': [0x00, 0xA4, 0x04, 0x0C, 0x06, 0xD2, 0x76, 0x00, 0x00, 0x01, 0x02],
-    'EF_GDO': [0x00, 0xB0, 0x82, 0x00, 0x00],
-    'EF_VERSION_1': [0x00, 0xB2, 0x01, 0x84, 0x00],
-    'EF_VERSION_2': [0x00, 0xB2, 0x02, 0x84, 0x00],
-    'EF_VERSION_3': [0x00, 0xB2, 0x03, 0x84, 0x00],
-    'SELECT_FILE_PD': [0x00, 0xB0, 0x81, 0x00, 0x02],
-    'SELECT_FILE_VD': [0x00, 0xB0, 0x82, 0x00, 0x08],
-    'RESET_CARD_TERMINAL': [0x20, 0x11, 0x00, 0x00, 0x00],
-    'GET_CARD': [0x20, 0x12, 0x01, 0x00, 0x01, 0x05],
-    'EJECT_CARD': [0x20, 0x15, 0x01, 0x00, 0x01, 0x01]
+    "SELECT_MF": [
+        0x00,
+        0xA4,
+        0x04,
+        0x0C,
+        0x07,
+        0xD2,
+        0x76,
+        0x00,
+        0x01,
+        0x44,
+        0x80,
+        0x00,
+    ],
+    "SELECT_HCA": [0x00, 0xA4, 0x04, 0x0C, 0x06, 0xD2, 0x76, 0x00, 0x00, 0x01, 0x02],
+    "EF_GDO": [0x00, 0xB0, 0x82, 0x00, 0x00],
+    "EF_VERSION_1": [0x00, 0xB2, 0x01, 0x84, 0x00],
+    "EF_VERSION_2": [0x00, 0xB2, 0x02, 0x84, 0x00],
+    "EF_VERSION_3": [0x00, 0xB2, 0x03, 0x84, 0x00],
+    "SELECT_FILE_PD": [0x00, 0xB0, 0x81, 0x00, 0x02],
+    "SELECT_FILE_VD": [0x00, 0xB0, 0x82, 0x00, 0x08],
+    "RESET_CARD_TERMINAL": [0x20, 0x11, 0x00, 0x00, 0x00],
+    "GET_CARD": [0x20, 0x12, 0x01, 0x00, 0x01, 0x05],
+    "EJECT_CARD": [0x20, 0x15, 0x01, 0x00, 0x01, 0x01],
 }
 
 # SFID - Short file identifier. These are only valid in conjunction with the Parent-Directory (DF)
 SFID = {
-    'EF.ATR': 0x1D,  # in MF
-    'EF.GDO': 0x02,  # in MF
-    'EF.Version': 0x10,  # in MF
-    'EF.StatusVD': 0x0C,  # in MF
-    'EF.PD': 0x01,  # in HCA
-    'EF.VD': 0x02,  # in HCA
+    "EF.ATR": 0x1D,  # in MF
+    "EF.GDO": 0x02,  # in MF
+    "EF.Version": 0x10,  # in MF
+    "EF.StatusVD": 0x0C,  # in MF
+    "EF.PD": 0x01,  # in HCA
+    "EF.VD": 0x02,  # in HCA
 }
 
 
 class HealthCard(object):
-
     def __init__(self, generation, patient, insurance):
         self.patient = patient
         self.insurance = insurance
@@ -50,36 +62,39 @@ class HealthCard(object):
 
     def to_flattened_json(self):
         result = {
-            'firstName': self.patient.first_name,
-            'lastName': self.patient.last_name,
-            'gender': self.patient.gender.lower(),
-            'insuranceId': self.patient.insurant_id,
-            'prefix': self.patient.prefix,
-            'title': self.patient.title,
-            'birthday': self.patient.birthdate.strftime('%d.%m.%Y'),
-            'nameAddition': self.patient.name_addition,
+            "firstName": self.patient.first_name,
+            "lastName": self.patient.last_name,
+            "gender": self.patient.gender.lower(),
+            "insuranceId": self.patient.insurant_id,
+            "prefix": self.patient.prefix,
+            "title": self.patient.title,
+            "birthday": self.patient.birthdate.strftime("%d.%m.%Y"),
+            "nameAddition": self.patient.name_addition,
         }
         if self.patient.residential_address:
-            result.update({
-                'city': self.patient.residential_address.city,
-                'zipCode': self.patient.residential_address.zip_code,
-                'country': self.patient.residential_address.country_code,
-                'street': self.patient.residential_address.street,
-                'streetNumber': self.patient.residential_address.street_number,
-                'addressAddition': self.patient.residential_address.address_addition
-            })
+            result.update(
+                {
+                    "city": self.patient.residential_address.city,
+                    "zipCode": self.patient.residential_address.zip_code,
+                    "country": self.patient.residential_address.country_code,
+                    "street": self.patient.residential_address.street,
+                    "streetNumber": self.patient.residential_address.street_number,
+                    "addressAddition": self.patient.residential_address.address_addition,
+                }
+            )
         elif self.patient.postal_address:
-            result.update({
-                'city': self.patient.postal_address.city,
-                'zipCode': self.patient.postal_address.zip_code,
-                'country': self.patient.postal_address.country_code,
-                'mailbox': self.patient.postal_address.mailbox
-            })
+            result.update(
+                {
+                    "city": self.patient.postal_address.city,
+                    "zipCode": self.patient.postal_address.zip_code,
+                    "country": self.patient.postal_address.country_code,
+                    "mailbox": self.patient.postal_address.mailbox,
+                }
+            )
         return json.dumps(result)
 
 
 class HealthCardReader(object):
-
     def __init__(self, index=0, cardservice=None):
         try:
             if cardservice:
@@ -87,13 +102,13 @@ class HealthCardReader(object):
             else:
                 r = readers()
                 if len(r) < 1:
-                    raise HealthCardException('No reader found.')
+                    raise HealthCardException("No reader found.")
                 self.reader = r[index]
                 self.connection = self.reader.createConnection()
 
             self.connection.connect()
         except (NoCardException, CardConnectionException):
-            print('No card inserted for reader: {}'.format(self.reader))
+            print("No card inserted for reader: {}".format(self.reader))
 
     def create_read_command(self, pos, length):
         bpos = [pos >> 8 & 0xFF, pos & 0xFF]
@@ -103,23 +118,23 @@ class HealthCardReader(object):
         data, sw1, sw2 = self.connection.transmit(adpu)
         if (sw1, sw2) != (0x90, 0x00):
             if (sw1, sw2) == (0x62, 0x83):
-                raise HealthCardException('File deactivated.')
+                raise HealthCardException("File deactivated.")
             elif (sw1, sw2) == (0x6A, 0x82):
-                raise HealthCardException('File not found.')
+                raise HealthCardException("File not found.")
             elif (sw1, sw2) == (0x69, 0x00):
-                raise HealthCardException('Command is not allowed.')
+                raise HealthCardException("Command is not allowed.")
             elif (sw1, sw2) == (0x62, 0x82):
-                raise HealthCardReadException('End Of File Reached Warning.')
+                raise HealthCardReadException("End Of File Reached Warning.")
             elif (sw1, sw2) == (0x62, 0x81):
-                raise HealthCardReadException('Corrupted Data Warning.')
+                raise HealthCardReadException("Corrupted Data Warning.")
             elif (sw1, sw2) == (0x69, 0x86):
-                raise HealthCardReadException('No current EF.')
+                raise HealthCardReadException("No current EF.")
             elif (sw1, sw2) == (0x69, 0x82):
-                raise HealthCardReadException('Security Status not satisfied.')
+                raise HealthCardReadException("Security Status not satisfied.")
             elif (sw1, sw2) == (0x69, 0x81):
-                raise HealthCardReadException('Wrong File Type.')
+                raise HealthCardReadException("Wrong File Type.")
             elif (sw1, sw2) == (0x6B, 0x00):
-                raise HealthCardReadException('Offset too big.')
+                raise HealthCardReadException("Offset too big.")
         return data
 
     def read_file(self, offset, length):
@@ -140,35 +155,47 @@ class HealthCardReader(object):
         version = "%i.%i.%i" % (
             decode_bcd(hdata[0:3]),
             decode_bcd(hdata[3:6]),
-            decode_bcd(hdata[6:10])
+            decode_bcd(hdata[6:10]),
         )
         return version
 
     def get_card_generation(self):
-        ef_version_1 = self.get_version(COMMANDS['EF_VERSION_1'])
-        ef_version_2 = self.get_version(COMMANDS['EF_VERSION_2'])
-        ef_version_3 = self.get_version(COMMANDS['EF_VERSION_3'])
+        ef_version_1 = self.get_version(COMMANDS["EF_VERSION_1"])
+        ef_version_2 = self.get_version(COMMANDS["EF_VERSION_2"])
+        ef_version_3 = self.get_version(COMMANDS["EF_VERSION_3"])
 
-        if ef_version_1 == '3.0.0' and ef_version_2 == '3.0.0' and ef_version_3 == '3.0.2':
-            generation = 'G1'
-        elif ef_version_1 == '3.0.0' and ef_version_2 == '3.0.1' and ef_version_3 == '3.0.3':
-            generation = 'G1 plus'
-        elif ef_version_1 == '4.0.0' and ef_version_2 == '4.0.0' and ef_version_3 == '4.0.0':
-            generation = 'G2'
+        if (
+            ef_version_1 == "3.0.0"
+            and ef_version_2 == "3.0.0"
+            and ef_version_3 == "3.0.2"
+        ):
+            generation = "G1"
+        elif (
+            ef_version_1 == "3.0.0"
+            and ef_version_2 == "3.0.1"
+            and ef_version_3 == "3.0.3"
+        ):
+            generation = "G1 plus"
+        elif (
+            ef_version_1 == "4.0.0"
+            and ef_version_2 == "4.0.0"
+            and ef_version_3 == "4.0.0"
+        ):
+            generation = "G2"
         else:
-            generation = 'unknown'
+            generation = "unknown"
         return generation
 
     def get_health_card(self):
 
         # Select Masterfile (root)
-        self.run_command(COMMANDS['SELECT_MF'])
+        self.run_command(COMMANDS["SELECT_MF"])
 
         card_generation = self.get_card_generation()
         # Select Health Care Application
-        self.run_command(COMMANDS['SELECT_HCA'])
+        self.run_command(COMMANDS["SELECT_HCA"])
         # Select file containing patient data
-        self.run_command(COMMANDS['SELECT_FILE_PD'])
+        self.run_command(COMMANDS["SELECT_FILE_PD"])
 
         # Create read command for the first two bytes of patient file.
         # Read first two byte of patient data. These contain the length of the PD file.
@@ -177,17 +204,17 @@ class HealthCardReader(object):
         # Since the two bytes are included themselves those two bytes are subtracted from the length.
         pd_length -= 0x02
 
-        self.run_command(COMMANDS['SELECT_MF'])
-        self.run_command(COMMANDS['SELECT_HCA'])
+        self.run_command(COMMANDS["SELECT_MF"])
+        self.run_command(COMMANDS["SELECT_HCA"])
         # print('select pd')
-        self.run_command(COMMANDS['SELECT_FILE_PD'])
+        self.run_command(COMMANDS["SELECT_FILE_PD"])
 
         patient_data_compressed = self.read_file(0x02, pd_length)
 
-        self.run_command(COMMANDS['SELECT_MF'])
-        self.run_command(COMMANDS['SELECT_HCA'])
+        self.run_command(COMMANDS["SELECT_MF"])
+        self.run_command(COMMANDS["SELECT_HCA"])
         # Select file containing insurance data
-        self.run_command(COMMANDS['SELECT_FILE_VD'])
+        self.run_command(COMMANDS["SELECT_FILE_VD"])
 
         # Read the first 8 byte of the EF.VD
         # The first two bytes contain the offset of the start of the unprotected insurance data.
@@ -202,9 +229,9 @@ class HealthCardReader(object):
         vd_end = (data[2] << 8) + data[3]
         vd_length = vd_end - (vd_start - 1)
 
-        self.run_command(COMMANDS['SELECT_MF'])
-        self.run_command(COMMANDS['SELECT_HCA'])
-        self.run_command(COMMANDS['SELECT_FILE_VD'])
+        self.run_command(COMMANDS["SELECT_MF"])
+        self.run_command(COMMANDS["SELECT_HCA"])
+        self.run_command(COMMANDS["SELECT_FILE_VD"])
 
         insurance_data_compressed = self.read_file(vd_start, vd_length)
 
@@ -223,7 +250,9 @@ class HealthCardReader(object):
 
         self.connection.disconnect()
 
-        return HealthCard(generation=card_generation, patient=patient, insurance=insurance)
+        return HealthCard(
+            generation=card_generation, patient=patient, insurance=insurance
+        )
 
 
 class HealthCardJSONEncoder(JSONEncoder):
@@ -231,10 +260,10 @@ class HealthCardJSONEncoder(JSONEncoder):
         if isinstance(o, (HealthCard, Insurance, Patient, ResidenceAddress)):
             return o.__dict__
         if type(o) is datetime:
-            return o.strftime('%d.%m.%Y')
+            return o.strftime("%d.%m.%Y")
         if type(o) is bytes:
             try:
-                return o.decode('iso-8859-15')
+                return o.decode("iso-8859-15")
             except AttributeError:
                 raise TypeError(repr(o) + " is not JSON serializable")
         raise TypeError(repr(o) + " is not JSON serializable")
