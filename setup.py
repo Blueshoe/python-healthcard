@@ -12,7 +12,7 @@ setup(
     name="python-healthcard",
     version=__version__,
     description="A module to read german health insurance cards with python",
-    url="https://gitlab.blueshoe.de/Blueshoe/python-healthcard/",
+    url="https://github.com/Blueshoe/python-healthcard/",
     author="Blueshoe",
     author_email="robert@blueshoe.de",
     license="MIT",
