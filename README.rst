@@ -3,9 +3,11 @@ python-healthcard
 =================
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
+.. image:: https://github.com/Blueshoe/python-healthcard/actions/workflows/lint.yml/badge.svg
+    :target: https://github.com/Blueshoe/python-healthcard/actions/workflows/lint.yml
 
 
-This package aims to provide a simple way to read healthcards from the german health insurance system.
+This package aims to provide a simple way to read smart cards (healthcards from) the German health insurance system.
 
 It is based off of this repo:
 https://github.com/asdil12/python-egk/
