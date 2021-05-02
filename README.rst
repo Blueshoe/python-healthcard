@@ -12,6 +12,16 @@ This package aims to provide a simple way to read smart cards (healthcards from)
 It is based off of this repo:
 https://github.com/asdil12/python-egk/
 
+Installation
+============
+Simply install the package via pip:
+
+.. code-block:: bash
+
+    pip install python-healthcard
+
+
+
 Usage
 =====
 
