@@ -19,6 +19,6 @@ setup(
     long_description=README,
     long_description_content_type="text/x-rst",
     packages=["healthcard"],
-    install_requires=["pyscard==1.9.6", "lxml==4.6.3"],
+    install_requires=["pyscard==1.9.6", "lxml==4.6.5"],
     zip_safe=False,
 )
